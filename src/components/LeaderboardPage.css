@@ -1,0 +1,150 @@
+.leaderboard {
+  --leaderboard-pad: 31px;
+  min-height: 100dvh;
+  background: var(--title-yellow);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 calc(96px + var(--safe-bottom));
+}
+
+.leaderboard__header {
+  padding: 0 var(--leaderboard-pad) 18px;
+}
+
+.leaderboard__logo {
+  display: block;
+  width: min(100%, 317px);
+  height: auto;
+  margin-bottom: 36px;
+}
+
+.leaderboard__title {
+  margin: 0;
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: 1;
+}
+
+.leaderboard__list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  padding: 0 var(--leaderboard-pad);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.leaderboard-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 125px;
+  padding: 0 28px;
+  border-radius: 15px;
+  background: var(--team-home);
+  color: var(--team-away);
+  overflow: hidden;
+}
+
+.leaderboard-card__content {
+  position: relative;
+  z-index: 2;
+  max-width: 58%;
+}
+
+.leaderboard-card__name {
+  margin: 0 0 8px;
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.leaderboard-card__tally {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
+.leaderboard-card__sep {
+  opacity: 0.65;
+}
+
+.leaderboard-card__crest-wrap {
+  position: relative;
+  width: 105px;
+  height: 105px;
+  flex-shrink: 0;
+}
+
+.leaderboard-card__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--team-away) 22%, transparent);
+}
+
+.leaderboard-card__ring--outer {
+  inset: 0;
+  background: color-mix(in srgb, var(--team-away) 8%, transparent);
+}
+
+.leaderboard-card__ring--inner {
+  inset: 10px;
+  background: color-mix(in srgb, var(--team-away) 12%, transparent);
+}
+
+.leaderboard-card__crest {
+  position: absolute;
+  inset: 22px;
+  width: calc(100% - 44px);
+  height: calc(100% - 44px);
+  object-fit: contain;
+}
+
+.leaderboard__tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  padding-bottom: var(--safe-bottom);
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 62px;
+}
+
+.leaderboard__tab {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #e6e8ec;
+}
+
+.leaderboard__tab--active {
+  background: #121212;
+}
+
+.leaderboard__meta {
+  margin: 16px 0 0;
+  padding: 0 var(--leaderboard-pad);
+  font-size: 0.75rem;
+  color: #5c5c5c;
+  text-align: center;
+}
