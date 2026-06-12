@@ -20,6 +20,7 @@ let pushTimer: ReturnType<typeof setTimeout> | null = null
 let pushInFlight = false
 let applyingRemote = false
 let initialPullDone = false
+let localHasUnsyncedChanges = false
 
 function getClient(): SupabaseClient | null {
   if (client) return client
@@ -74,6 +75,7 @@ function applyRemoteRow(row: RemoteSyncRow): boolean {
     localStorage.setItem(STATE_KEY, JSON.stringify(row.game_state))
     localStorage.setItem(ACTIVITY_KEY, JSON.stringify(row.activity_feed))
     writeSyncCursor(row.updated_at)
+    localHasUnsyncedChanges = false
     dispatchLocalUpdates()
     return true
   } finally {
@@ -82,7 +84,7 @@ function applyRemoteRow(row: RemoteSyncRow): boolean {
 }
 
 async function pullRemote(): Promise<void> {
-  if (pushInFlight || applyingRemote) return
+  if (pushInFlight || applyingRemote || localHasUnsyncedChanges) return
 
   const supabase = getClient()
   if (!supabase) {
@@ -138,6 +140,7 @@ async function pushRemote(): Promise<void> {
 
     if (error || !data?.updated_at) return
     writeSyncCursor(data.updated_at)
+    localHasUnsyncedChanges = false
   } finally {
     pushInFlight = false
   }
@@ -145,6 +148,8 @@ async function pushRemote(): Promise<void> {
 
 export function scheduleSyncPush(): void {
   if (!getClient() || applyingRemote || !initialPullDone) return
+
+  localHasUnsyncedChanges = true
 
   if (pushTimer) clearTimeout(pushTimer)
   pushTimer = setTimeout(() => {

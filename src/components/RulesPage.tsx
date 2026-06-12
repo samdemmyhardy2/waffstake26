@@ -71,9 +71,9 @@ export function RulesPage() {
             your {STARTING_POINTS} bonus points plus yellows earned by teams in your squad.
           </p>
           <p>
-            <strong>Red cards</strong> are never spent. They only matter for stealing: to steal
-            someone&apos;s team, you need more reds on your <strong>top team</strong> (the first team
-            in your squad) than they have on theirs.
+            <strong>Red cards</strong> are never spent. They only matter for stealing: to steal a
+            team, you need more reds on your <strong>top team</strong> (the first team in your squad)
+            than that team has.
           </p>
         </section>
 
@@ -166,7 +166,7 @@ export function RulesPage() {
           <ul className="rules__list">
             <li>Costs the same as buying that team.</li>
             <li>
-              You must have more red cards on your top team than they have on their top team.
+              You must have more red cards on your top team than the team you are trying to steal.
             </li>
             <li>
               Your other bought teams may be spent. You take their team as your new top team and

@@ -59,7 +59,7 @@ function TeamRosterCard({ team }: { team: LeaderboardRow }) {
 }
 
 export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
-  const { playerState, allStates, acquireTeamForPlayer } = useGameState()
+  const { playerState, acquireTeamForPlayer } = useGameState()
   const gameTimeLocked = useGameTime()
   const shopGridRef = useRef<HTMLElement>(null)
   const teams = useMemo(
@@ -123,13 +123,11 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
 
     const ownerId = findTeamOwner(team.slug, playerId)
     const owner = ownerId ? getGamePlayer(ownerId) : null
-    const ownerRedCards = ownerId
-      ? (redBySlug.get(allStates[ownerId]?.selectedTeamSlug ?? '') ?? 0)
-      : 0
+    const targetRedCards = redBySlug.get(team.slug) ?? 0
 
-    if (ownerId && myRedCards <= ownerRedCards) {
+    if (ownerId && myRedCards <= targetRedCards) {
       setMessage(
-        `You need more red cards than ${owner?.name ?? 'them'} (${ownerRedCards}) to steal ${team.name}.`,
+        `You need more red cards on your top team than ${team.name} has (${targetRedCards}) to steal it.`,
       )
       return
     }
@@ -227,12 +225,9 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
           const isCurrentTeam = playerState ? playerOwnsTeam(playerState, team.slug) : false
           const ownerId = findTeamOwner(team.slug, playerId)
           const owner = ownerId ? getGamePlayer(ownerId) : null
-          const ownerRedCards = ownerId
-            ? (redBySlug.get(allStates[ownerId]?.selectedTeamSlug ?? '') ?? 0)
-            : 0
           const teamRedCards = redBySlug.get(team.slug) ?? 0
           const canAfford = availableCards >= team.cardsRequired
-          const canSteal = !ownerId || myRedCards > ownerRedCards
+          const canSteal = !ownerId || myRedCards > teamRedCards
           const canAcquire =
             !gameTimeLocked && Boolean(selectedTeam) && canAfford && canSteal && !isCurrentTeam
           const actionLabel = isCurrentTeam ? 'Owned' : ownerId ? 'Steal' : 'Buy'

@@ -103,6 +103,10 @@ export function getRemainingStartingPoints(state: PlayerState): number {
   return Math.max(0, STARTING_POINTS - state.teamCost - additionalTeamsCost(state))
 }
 
+export function getLockedTeamCardsCost(state: PlayerState): number {
+  return state.teamCost + additionalTeamsCost(state)
+}
+
 export function getAvailableCardsForPlayer(state: PlayerState): number {
   if (!state.selectedTeamSlug) return 0
 

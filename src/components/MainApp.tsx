@@ -3,7 +3,7 @@ import { getGamePlayer } from '../data/gamePlayers'
 import { useGameState } from '../hooks/useGameState'
 import {
   getAvailableCardsForPlayer,
-  getRemainingStartingPoints,
+  getLockedTeamCardsCost,
   getSquadYellowCards,
 } from '../utils/gameState'
 import { buildLeaderboardRows } from '../utils/leaderboard'
@@ -42,8 +42,8 @@ export function MainApp() {
     const availableCards = getAvailableCardsForPlayer(playerState)
 
     return {
-      remainingStarting: getRemainingStartingPoints(playerState),
-      yellowCards: getSquadYellowCards(playerState),
+      lockedInTeams: getLockedTeamCardsCost(playerState),
+      matchYellows: getSquadYellowCards(playerState),
       redCards: selectedTeam.redCards,
       availableCards,
     }
