@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getGamePlayer } from '../data/gamePlayers'
 import { useGameState } from '../hooks/useGameState'
-import { getAvailableCardsForPlayer, STARTING_POINTS } from '../utils/gameState'
+import {
+  getAvailableCardsForPlayer,
+  getRemainingStartingPoints,
+  getSquadYellowCards,
+} from '../utils/gameState'
 import { buildLeaderboardRows } from '../utils/leaderboard'
 import { FloatingCards } from './FloatingCards'
 import { LeaderboardPage } from './LeaderboardPage'
 import { PlayerBanner } from './PlayerBanner'
 import { PlayerSelectPage } from './PlayerSelectPage'
+import { RulesPage } from './RulesPage'
 import { ShopPage } from './ShopPage'
 import { TabBar } from './TabBar'
 import { appTabFromPath, type AppTab } from '../utils/baseUrl'
@@ -37,8 +42,8 @@ export function MainApp() {
     const availableCards = getAvailableCardsForPlayer(playerState)
 
     return {
-      remainingStarting: Math.max(0, STARTING_POINTS - playerState.primaryTeamCost),
-      yellowCards: selectedTeam.yellowCards,
+      remainingStarting: getRemainingStartingPoints(playerState),
+      yellowCards: getSquadYellowCards(playerState),
       redCards: selectedTeam.redCards,
       availableCards,
     }
@@ -73,6 +78,8 @@ export function MainApp() {
       <div className="app-frame__content">
         {activeTab === 'shop' ? (
           <ShopPage onNavigate={navigate} playerId={playerId} />
+        ) : activeTab === 'profile' ? (
+          <RulesPage />
         ) : (
           <LeaderboardPage playerId={playerId} />
         )}

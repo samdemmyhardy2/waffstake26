@@ -1,4 +1,4 @@
-# WASSFSTAKE 26
+# WaffStake
 
 A mobile-first sweepstake site tracking yellow and red cards at the 2026 World Cup. Inspired by [The Guardian's player guide](https://www.theguardian.com/football/ng-interactive/2026/jun/04/world-cup-2026-complete-player-guide).
 

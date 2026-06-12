@@ -21,34 +21,13 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
       <FloatingCards intro />
 
       <div className="welcome__content">
-        <h1 className="welcome__title" aria-label="The Waff Stake 2026">
+        <h1 className="welcome__title" aria-label="WaffStake">
           <img
-            className="welcome__word welcome__word--the welcome__word--1"
-            src={assetUrl('/welcome/the.svg')}
-            alt="The"
-            width={133}
-            height={66}
-          />
-          <img
-            className="welcome__word welcome__word--2"
-            src={assetUrl('/welcome/waff.svg')}
-            alt="Waff"
-            width={300}
-            height={100}
-          />
-          <img
-            className="welcome__word welcome__word--3"
-            src={assetUrl('/welcome/stake.svg')}
-            alt="Stake"
-            width={295}
-            height={93}
-          />
-          <img
-            className="welcome__word welcome__word--4"
-            src={assetUrl('/welcome/2026.svg')}
-            alt="2026"
-            width={296}
-            height={111}
+            className="welcome__logo"
+            src={assetUrl('/title.svg')}
+            alt="WaffStake"
+            width={317}
+            height={38}
           />
         </h1>
 
@@ -56,7 +35,7 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
           className="welcome__message"
           style={{ ['--message-delay' as string]: `${WELCOME_MESSAGE_DELAY_MS}ms` }}
         >
-          Please wait, the online webstore is under construction
+          Enter at your own risk!
         </p>
       </div>
 

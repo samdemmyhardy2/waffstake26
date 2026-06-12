@@ -31,7 +31,7 @@ export function TabBar({ activeTab, onNavigate }: TabBarProps) {
       <button
         type="button"
         className={`tabbar__tab${activeTab === 'profile' ? ' tabbar__tab--active' : ''}`}
-        aria-label="My profile"
+        aria-label="Rules"
         aria-current={activeTab === 'profile' ? 'page' : undefined}
         onClick={() => onNavigate('profile')}
       >

@@ -16,9 +16,9 @@ export function PlayerSelectPage({ allStates, onSelect }: PlayerSelectPageProps)
         <img
           className="player-select__logo"
           src={assetUrl('/title.svg')}
-          alt="WASSFSTAKE 26"
-          width={896}
-          height={205}
+          alt="WaffStake"
+          width={317}
+          height={38}
         />
         <h1 className="player-select__title">Who are you?</h1>
         <p className="player-select__hint">Pick your player — everyone shares the same game.</p>

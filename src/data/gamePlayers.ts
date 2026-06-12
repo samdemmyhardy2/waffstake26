@@ -13,7 +13,6 @@ export const GAME_PLAYERS: GamePlayer[] = [
     id: TEST_PLAYER_ID,
     name: 'Player 1',
     isTestPlayer: true,
-    excludedTeamSlugs: ['mexico'],
   },
   { id: 'tommy', name: 'Tommy', defaultTeamSlug: 'new-zealand' },
   { id: 'picot', name: 'Picot', defaultTeamSlug: 'uzbekistan' },

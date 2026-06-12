@@ -59,9 +59,9 @@ export function LeaderboardPage({ playerId }: LeaderboardPageProps) {
         <img
           className="leaderboard__logo"
           src={assetUrl('/title.svg')}
-          alt="WASSFSTAKE 26"
-          width={896}
-          height={205}
+          alt="WaffStake"
+          width={317}
+          height={38}
         />
       </header>
 

@@ -1,4 +1,5 @@
 import { getGamePlayer } from '../data/gamePlayers'
+import { scheduleSyncPush } from './gameSync'
 import { teamNameFromSlug } from './teamName'
 
 export const ACTIVITY_KEY = 'waffstake-activity-feed'
@@ -44,6 +45,7 @@ function readActivity(): ActivityEntry[] {
 function writeActivity(entries: ActivityEntry[]): void {
   localStorage.setItem(ACTIVITY_KEY, JSON.stringify(entries))
   window.dispatchEvent(new CustomEvent('waffstake-activity-change'))
+  scheduleSyncPush()
 }
 
 export function getActivityFeed(): ActivityEntry[] {
@@ -77,7 +79,7 @@ export function formatActivityEntry(entry: ActivityEntry): string {
     case 'added':
       return `${player} added ${team} for ${entry.cost ?? 0} cards`
     case 'swapped':
-      return `${player} swapped to ${team} for ${entry.cost ?? 0} cards`
+      return `${player} bought ${team} for ${entry.cost ?? 0} cards`
     case 'stole':
       return `${player} stole ${team} from ${from ?? 'someone'} for ${entry.cost ?? 0} cards`
   }

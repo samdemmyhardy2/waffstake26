@@ -6,9 +6,9 @@ export function Header() {
       <img
         className="site-header__logo"
         src={assetUrl('/title.svg')}
-        alt="WASSFSTAKE 26 — Get yer yellows on"
-        width={896}
-        height={205}
+        alt="WaffStake"
+        width={317}
+        height={38}
       />
     </header>
   )

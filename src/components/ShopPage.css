@@ -14,7 +14,7 @@
 }
 
 .shop__header {
-  padding: 0 10px;
+  padding: 0 var(--page-pad);
 }
 
 .shop__logo {

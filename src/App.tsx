@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { WelcomePage } from './components/WelcomePage'
 import { MainApp } from './components/MainApp'
 import { appPath, isAppPath } from './utils/baseUrl'
+import { initGameSync } from './utils/gameSync'
 
 const ENTRY_ENABLED = true
 
@@ -24,6 +25,8 @@ function App() {
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
+
+  useEffect(() => initGameSync(), [])
 
   const goToApp = () => {
     window.history.pushState(null, '', appPath())

@@ -3,16 +3,18 @@ import { TEAM_SEED_BY_SLUG, cardsRequiredForSeed } from '../data/teamSeeds'
 import { appendActivity, clearActivityFeed } from './activityFeed'
 import { buildLeaderboardRows } from './leaderboard'
 import { isGameTime } from './gameTime'
+import { isGameSyncEnabled, scheduleSyncPush } from './gameSync'
 import { buildShopTeams } from './shopTeams'
 
 export const MAX_ADDITIONAL_TEAMS = 2
 export const STARTING_POINTS = 12
 
 export interface PlayerState {
+  startingTeamSlug: string | null
   selectedTeamSlug: string | null
   additionalTeamSlugs: string[]
   cardsSpent: number
-  primaryTeamCost: number
+  teamCost: number
 }
 
 interface GameState {
@@ -22,7 +24,7 @@ interface GameState {
 const STATE_KEY = 'waffstake-game-state'
 const ACTIVE_PLAYER_KEY = 'waffstake-active-player'
 const GAME_DATA_VERSION_KEY = 'waffstake-data-version'
-const GAME_DATA_VERSION = 1
+const GAME_DATA_VERSION = 2
 
 const LEGACY_KEYS = {
   selectedTeam: 'waffstake-selected-team',
@@ -32,23 +34,34 @@ const LEGACY_KEYS = {
 } as const
 
 const DEFAULT_PLAYER_STATE: PlayerState = {
+  startingTeamSlug: null,
   selectedTeamSlug: null,
   additionalTeamSlugs: [],
   cardsSpent: 0,
-  primaryTeamCost: 0,
+  teamCost: 0,
 }
 
-function normalizeAdditionalSlugs(
-  slugs: unknown,
-  primarySlug: string | null,
-): string[] {
+function teamCostForSlug(slug: string): number {
+  const seed = TEAM_SEED_BY_SLUG[slug] ?? 48
+  return cardsRequiredForSeed(seed)
+}
+
+function additionalTeamsCost(state: PlayerState): number {
+  const shopTeams = buildShopTeams()
+  return state.additionalTeamSlugs.reduce((total, slug) => {
+    const team = shopTeams.find((entry) => entry.slug === slug)
+    return total + (team?.cardsRequired ?? 0)
+  }, 0)
+}
+
+function normalizeAdditionalSlugs(slugs: unknown, mainSlug: string | null): string[] {
   if (!Array.isArray(slugs)) return []
 
   const seen = new Set<string>()
   const normalized: string[] = []
 
   for (const slug of slugs) {
-    if (typeof slug !== 'string' || slug === primarySlug || seen.has(slug)) continue
+    if (typeof slug !== 'string' || slug === mainSlug || seen.has(slug)) continue
     seen.add(slug)
     normalized.push(slug)
     if (normalized.length >= MAX_ADDITIONAL_TEAMS) break
@@ -74,43 +87,171 @@ export function hasEmptyAdditionalSlot(state: PlayerState): boolean {
   return state.additionalTeamSlugs.length < MAX_ADDITIONAL_TEAMS
 }
 
+function totalYellowCardsForPlayer(state: PlayerState): number {
+  const rows = buildLeaderboardRows()
+  return getPlayerTeamSlugs(state).reduce((total, slug) => {
+    const team = rows.find((entry) => entry.slug === slug)
+    return total + (team?.yellowCards ?? 0)
+  }, 0)
+}
+
+export function getSquadYellowCards(state: PlayerState): number {
+  return totalYellowCardsForPlayer(state)
+}
+
+export function getRemainingStartingPoints(state: PlayerState): number {
+  return Math.max(0, STARTING_POINTS - state.teamCost - additionalTeamsCost(state))
+}
+
 export function getAvailableCardsForPlayer(state: PlayerState): number {
   if (!state.selectedTeamSlug) return 0
-
-  const selectedTeam = buildLeaderboardRows().find((team) => team.slug === state.selectedTeamSlug)
-  if (!selectedTeam) return 0
-
-  const shopTeams = buildShopTeams()
-  const additionalTeamsCost = state.additionalTeamSlugs.reduce((total, slug) => {
-    const team = shopTeams.find((entry) => entry.slug === slug)
-    return total + (team?.cardsRequired ?? 0)
-  }, 0)
 
   return Math.max(
     0,
     STARTING_POINTS +
-      selectedTeam.yellowCards -
-      state.cardsSpent -
-      state.primaryTeamCost -
-      additionalTeamsCost,
+      totalYellowCardsForPlayer(state) -
+      state.teamCost -
+      additionalTeamsCost(state),
   )
 }
 
-function primaryTeamCostForSlug(slug: string): number {
-  const seed = TEAM_SEED_BY_SLUG[slug] ?? 48
-  return cardsRequiredForSeed(seed)
+function isUpgradePurchase(state: PlayerState, cost: number, isSteal: boolean): boolean {
+  if (isSteal) return true
+
+  const remaining = getRemainingStartingPoints(state)
+  if (!isSteal && remaining >= cost && hasEmptyAdditionalSlot(state)) {
+    return false
+  }
+
+  if (!hasEmptyAdditionalSlot(state)) return true
+  if (!state.selectedTeamSlug) return true
+  return cost > teamCostForSlug(state.selectedTeamSlug)
+}
+
+type UpgradePlan =
+  | { type: 'replace-main'; keepAdditional: string[] }
+  | { type: 'fill-additional'; forfeitSlug: string; keepAdditional: string[] }
+  | { type: 'replace-all' }
+
+function planUpgradePurchase(state: PlayerState, cost: number, isSteal: boolean): UpgradePlan {
+  const remaining = getRemainingStartingPoints(state)
+  const rows = buildLeaderboardRows()
+  const main = rows.find((team) => team.slug === state.selectedTeamSlug)
+  const mainYellows = main?.yellowCards ?? 0
+
+  if (remaining < cost && remaining + mainYellows >= cost) {
+    return { type: 'replace-main', keepAdditional: [...state.additionalTeamSlugs] }
+  }
+
+  if (!isSteal && remaining >= cost && !hasEmptyAdditionalSlot(state)) {
+    return { type: 'replace-main', keepAdditional: [...state.additionalTeamSlugs] }
+  }
+
+  if (!isSteal) {
+    for (const slug of state.additionalTeamSlugs) {
+      const team = rows.find((entry) => entry.slug === slug)
+      if (team && team.yellowCards >= cost) {
+        return {
+          type: 'fill-additional',
+          forfeitSlug: slug,
+          keepAdditional: state.additionalTeamSlugs.filter((entry) => entry !== slug),
+        }
+      }
+    }
+  }
+
+  return { type: 'replace-all' }
+}
+
+export type PurchasePlan = UpgradePlan | { type: 'add' }
+
+export function previewPurchase(
+  state: PlayerState,
+  cost: number,
+  isSteal: boolean,
+): PurchasePlan {
+  if (!isSteal && !isUpgradePurchase(state, cost, false)) {
+    return { type: 'add' }
+  }
+  return planUpgradePurchase(state, cost, isSteal)
+}
+
+export function willForfeitAllTeamsOnUpgrade(
+  state: PlayerState,
+  cost: number,
+  isSteal: boolean,
+): boolean {
+  return planUpgradePurchase(state, cost, isSteal).type === 'replace-all'
+}
+
+export function formatPurchaseMessage(
+  plan: PurchasePlan,
+  teamName: string,
+  cost: number,
+): string {
+  if (plan.type === 'add') {
+    return `You added ${teamName} for ${cost} cards.`
+  }
+
+  switch (plan.type) {
+    case 'replace-all':
+      return `You bought ${teamName} for ${cost} cards — all your teams went back to the shop.`
+    case 'replace-main':
+      return plan.keepAdditional.length > 0
+        ? `You bought ${teamName} for ${cost} cards — your top team went back to the shop.`
+        : `You bought ${teamName} for ${cost} cards — your old team went back to the shop.`
+    case 'fill-additional':
+      return `You bought ${teamName} for ${cost} cards — one of your extra teams went back to the shop.`
+  }
+}
+
+function applyUpgradePlan(
+  buyer: PlayerState,
+  teamSlug: string,
+  cost: number,
+  plan: UpgradePlan,
+): PlayerState {
+  switch (plan.type) {
+    case 'replace-main':
+      return {
+        ...buyer,
+        startingTeamSlug: teamSlug,
+        selectedTeamSlug: teamSlug,
+        additionalTeamSlugs: plan.keepAdditional,
+        cardsSpent: 0,
+        teamCost: cost,
+      }
+    case 'fill-additional':
+      return {
+        ...buyer,
+        additionalTeamSlugs: [
+          ...plan.keepAdditional,
+          teamSlug,
+        ],
+        cardsSpent: 0,
+      }
+    case 'replace-all':
+      return {
+        startingTeamSlug: teamSlug,
+        selectedTeamSlug: teamSlug,
+        additionalTeamSlugs: [],
+        cardsSpent: 0,
+        teamCost: cost,
+      }
+  }
 }
 
 function defaultStateForPlayer(playerId: string): PlayerState {
   const player = getGamePlayer(playerId)
   const slug = player?.defaultTeamSlug ?? null
-  const primaryTeamCost = slug ? primaryTeamCostForSlug(slug) : 0
+  const teamCost = slug ? teamCostForSlug(slug) : 0
 
   return {
+    startingTeamSlug: slug,
     selectedTeamSlug: slug,
     additionalTeamSlugs: [],
     cardsSpent: 0,
-    primaryTeamCost,
+    teamCost,
   }
 }
 
@@ -124,7 +265,18 @@ function emptyState(): GameState {
 
 function applyGameDataMigrations(): void {
   try {
-    if (localStorage.getItem(GAME_DATA_VERSION_KEY) === String(GAME_DATA_VERSION)) return
+    const stored = localStorage.getItem(GAME_DATA_VERSION_KEY)
+    if (stored === String(GAME_DATA_VERSION)) return
+
+    if (!stored) {
+      localStorage.setItem(GAME_DATA_VERSION_KEY, String(GAME_DATA_VERSION))
+      if (!isGameSyncEnabled()) {
+        writeState(emptyState())
+        clearActivityFeed()
+      }
+      return
+    }
+
     writeState(emptyState())
     clearActivityFeed()
     localStorage.setItem(GAME_DATA_VERSION_KEY, String(GAME_DATA_VERSION))
@@ -147,32 +299,42 @@ function readState(): GameState {
 
     const players = { ...emptyState().players }
     for (const player of GAME_PLAYERS) {
-      const saved = parsed.players[player.id]
+      const saved = parsed.players[player.id] as
+        | (Partial<PlayerState> & { primaryTeamCost?: number })
+        | undefined
       const fallback = defaultStateForPlayer(player.id)
       const selectedTeamSlug =
         typeof saved?.selectedTeamSlug === 'string'
           ? saved.selectedTeamSlug
           : fallback.selectedTeamSlug
 
-      let primaryTeamCost =
-        typeof saved?.primaryTeamCost === 'number'
-          ? saved.primaryTeamCost
-          : fallback.primaryTeamCost
+      const startingTeamSlug =
+        typeof saved?.startingTeamSlug === 'string'
+          ? saved.startingTeamSlug
+          : fallback.startingTeamSlug ?? selectedTeamSlug
+
+      let teamCost =
+        typeof saved?.teamCost === 'number'
+          ? saved.teamCost
+          : typeof saved?.primaryTeamCost === 'number'
+            ? saved.primaryTeamCost
+            : fallback.teamCost
 
       if (
-        primaryTeamCost === 0 &&
+        teamCost === 0 &&
         selectedTeamSlug === fallback.selectedTeamSlug &&
-        fallback.primaryTeamCost > 0
+        fallback.teamCost > 0
       ) {
-        primaryTeamCost = fallback.primaryTeamCost
+        teamCost = fallback.teamCost
       }
 
       players[player.id] = {
+        startingTeamSlug,
         selectedTeamSlug,
         additionalTeamSlugs: normalizeAdditionalSlugs(saved?.additionalTeamSlugs, selectedTeamSlug),
         cardsSpent:
           typeof saved?.cardsSpent === 'number' && saved.cardsSpent > 0 ? saved.cardsSpent : 0,
-        primaryTeamCost,
+        teamCost,
       }
     }
 
@@ -183,17 +345,21 @@ function readState(): GameState {
 }
 
 function migrateLegacyState(state: GameState): GameState {
+  let didMigrate = false
+
   try {
     const legacySelected = localStorage.getItem(LEGACY_KEYS.selectedTeam)
     const legacySpent = localStorage.getItem(LEGACY_KEYS.cardsSpent)
     const activePlayer = localStorage.getItem(ACTIVE_PLAYER_KEY) ?? GAME_PLAYERS[0]?.id
 
     if (legacySelected && activePlayer && state.players[activePlayer]) {
+      didMigrate = true
       state.players[activePlayer] = {
+        startingTeamSlug: legacySelected,
         selectedTeamSlug: legacySelected,
         additionalTeamSlugs: [],
         cardsSpent: legacySpent ? Number.parseInt(legacySpent, 10) || 0 : 0,
-        primaryTeamCost: 0,
+        teamCost: 0,
       }
     }
 
@@ -204,13 +370,17 @@ function migrateLegacyState(state: GameState): GameState {
     // ignore migration errors
   }
 
-  writeState(state)
+  if (didMigrate || !isGameSyncEnabled()) {
+    writeState(state)
+  }
+
   return state
 }
 
 function writeState(state: GameState): void {
   localStorage.setItem(STATE_KEY, JSON.stringify(state))
   window.dispatchEvent(new CustomEvent('waffstake-state-change'))
+  scheduleSyncPush()
 }
 
 export function subscribeGameState(listener: () => void): () => void {
@@ -261,14 +431,12 @@ export function setSelectedTeamSlug(playerId: string, slug: string): void {
   if (isGameTime()) return
 
   const state = readState()
-  const current = state.players[playerId] ?? { ...DEFAULT_PLAYER_STATE }
-  const additionalTeamSlugs = current.additionalTeamSlugs.filter((teamSlug) => teamSlug !== slug)
   state.players[playerId] = {
-    ...current,
+    startingTeamSlug: slug,
     selectedTeamSlug: slug,
-    additionalTeamSlugs,
+    additionalTeamSlugs: [],
     cardsSpent: 0,
-    primaryTeamCost: primaryTeamCostForSlug(slug),
+    teamCost: teamCostForSlug(slug),
   }
   writeState(state)
   appendActivity({ playerId, type: 'picked', teamSlug: slug })
@@ -277,8 +445,8 @@ export function setSelectedTeamSlug(playerId: string, slug: string): void {
 function findTeamSlot(
   playerState: PlayerState,
   teamSlug: string,
-): 'primary' | 'additional' | null {
-  if (playerState.selectedTeamSlug === teamSlug) return 'primary'
+): 'main' | 'additional' | null {
+  if (playerState.selectedTeamSlug === teamSlug) return 'main'
   if (playerState.additionalTeamSlugs.includes(teamSlug)) return 'additional'
   return null
 }
@@ -291,7 +459,7 @@ function removeTeamFromPlayer(playerState: PlayerState, teamSlug: string): Playe
       selectedTeamSlug: promoted ?? null,
       additionalTeamSlugs: rest,
       cardsSpent: 0,
-      primaryTeamCost: 0,
+      teamCost: promoted ? teamCostForSlug(promoted) : 0,
     }
   }
 
@@ -327,49 +495,35 @@ export function acquireTeam(
   const buyerFormerSlug = buyer.selectedTeamSlug
   if (!buyerFormerSlug) return false
 
-  const buyerRow = buildLeaderboardRows().find((team) => team.slug === buyerFormerSlug)
-  const availableYellows = Math.max(
-    0,
-    STARTING_POINTS + (buyerRow?.yellowCards ?? 0) - buyer.cardsSpent - buyer.primaryTeamCost,
-  )
+  if (getAvailableCardsForPlayer(buyer) < cost) return false
 
-  if (availableYellows < cost) return false
-
-  const addingToExtra = !defenderId && hasEmptyAdditionalSlot(buyer)
+  const isSteal = Boolean(defenderId)
+  const upgrade = isUpgradePurchase(buyer, cost, isSteal)
 
   if (defenderId) {
     const defender = state.players[defenderId] ?? { ...DEFAULT_PLAYER_STATE }
     const defenderSlot = findTeamSlot(defender, teamSlug)
+    const plan = planUpgradePurchase(buyer, cost, true)
 
-    if (defenderSlot === 'primary' && buyerFormerSlug) {
+    if (defenderSlot === 'main' && buyerFormerSlug) {
       state.players[defenderId] = {
         ...defender,
         selectedTeamSlug: buyerFormerSlug,
         cardsSpent: 0,
-        primaryTeamCost: buyer.primaryTeamCost,
+        teamCost: buyer.teamCost,
       }
     } else if (defenderSlot === 'additional') {
       state.players[defenderId] = removeTeamFromPlayer(defender, teamSlug)
     }
 
-    state.players[buyerId] = {
-      selectedTeamSlug: teamSlug,
-      additionalTeamSlugs: buyer.additionalTeamSlugs,
-      cardsSpent: 0,
-      primaryTeamCost: cost,
-    }
-  } else if (addingToExtra) {
+    state.players[buyerId] = applyUpgradePlan(buyer, teamSlug, cost, plan)
+  } else if (upgrade) {
+    const plan = planUpgradePurchase(buyer, cost, false)
+    state.players[buyerId] = applyUpgradePlan(buyer, teamSlug, cost, plan)
+  } else {
     state.players[buyerId] = {
       ...buyer,
       additionalTeamSlugs: [...buyer.additionalTeamSlugs, teamSlug],
-      cardsSpent: buyer.cardsSpent + cost,
-    }
-  } else {
-    state.players[buyerId] = {
-      selectedTeamSlug: teamSlug,
-      additionalTeamSlugs: buyer.additionalTeamSlugs,
-      cardsSpent: 0,
-      primaryTeamCost: cost,
     }
   }
 
@@ -383,17 +537,17 @@ export function acquireTeam(
       cost,
       fromPlayerId: defenderId,
     })
-  } else if (addingToExtra) {
+  } else if (upgrade) {
     appendActivity({
       playerId: buyerId,
-      type: 'added',
+      type: 'swapped',
       teamSlug,
       cost,
     })
   } else {
     appendActivity({
       playerId: buyerId,
-      type: 'swapped',
+      type: 'added',
       teamSlug,
       cost,
     })

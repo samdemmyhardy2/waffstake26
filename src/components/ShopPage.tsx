@@ -5,10 +5,11 @@ import { useGameTime } from '../hooks/useGameTime'
 import { assetUrl, type AppTab } from '../utils/baseUrl'
 import {
   findTeamOwner,
-  hasEmptyAdditionalSlot,
+  formatPurchaseMessage,
+  getAvailableCardsForPlayer,
   MAX_ADDITIONAL_TEAMS,
   playerOwnsTeam,
-  STARTING_POINTS,
+  previewPurchase,
 } from '../utils/gameState'
 import { gameTimeMessage } from '../utils/gameTime'
 import { buildLeaderboardRows, type LeaderboardRow } from '../utils/leaderboard'
@@ -92,25 +93,10 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
     MAX_ADDITIONAL_TEAMS - (playerState?.additionalTeamSlugs.length ?? 0),
   )
 
-  const additionalTeamsCost = useMemo(() => {
-    const slugs = playerState?.additionalTeamSlugs ?? []
-    return slugs.reduce((total, slug) => {
-      const team = teams.find((t) => t.slug === slug)
-      return total + (team?.cardsRequired ?? 0)
-    }, 0)
-  }, [playerState?.additionalTeamSlugs, teams])
-
   const availableCards = useMemo(() => {
-    if (!selectedTeam || !playerState) return 0
-    return Math.max(
-      0,
-      STARTING_POINTS +
-        selectedTeam.yellowCards -
-        playerState.cardsSpent -
-        playerState.primaryTeamCost -
-        additionalTeamsCost,
-    )
-  }, [selectedTeam, playerState, additionalTeamsCost])
+    if (!playerState) return 0
+    return getAvailableCardsForPlayer(playerState)
+  }, [playerState])
 
   const myRedCards = selectedTeam?.redCards ?? 0
 
@@ -125,7 +111,7 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
       return
     }
 
-    if (playerState && playerOwnsTeam(playerState, team.slug)) {
+    if (playerOwnsTeam(playerState, team.slug)) {
       setMessage(`You already have ${team.name}.`)
       return
     }
@@ -148,7 +134,11 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
       return
     }
 
-    const willAddToExtra = !ownerId && hasEmptyAdditionalSlot(playerState)
+    const purchasePlan = previewPurchase(
+      playerState,
+      team.cardsRequired,
+      Boolean(ownerId),
+    )
 
     const acquired = acquireTeamForPlayer(team.slug, team.cardsRequired, ownerId)
     if (!acquired) {
@@ -161,11 +151,7 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
       return
     }
 
-    setMessage(
-      willAddToExtra
-        ? `You added ${team.name} for ${team.cardsRequired} cards.`
-        : `You swapped to ${team.name} for ${team.cardsRequired} cards.`,
-    )
+    setMessage(formatPurchaseMessage(purchasePlan, team.name, team.cardsRequired))
   }
 
   const handleAddTeam = () => {
@@ -189,9 +175,9 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
         <img
           className="shop__logo"
           src={assetUrl('/title.svg')}
-          alt="WASSFSTAKE 26"
-          width={896}
-          height={205}
+          alt="WaffStake"
+          width={317}
+          height={38}
         />
       </header>
 

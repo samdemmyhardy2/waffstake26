@@ -1,0 +1,123 @@
+.rules {
+  --rules-pad: 31px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.rules--embedded {
+  background: transparent;
+}
+
+.rules__header {
+  padding: 0 var(--rules-pad);
+  flex-shrink: 0;
+}
+
+.rules__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.rules__title {
+  margin: 0 0 16px;
+  padding: 0 var(--rules-pad);
+  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+  font-synthesis: none;
+  font-size: 1.125rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.rules__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--rules-pad) 8px;
+}
+
+.rules__section {
+  margin-bottom: 24px;
+}
+
+.rules__section--example {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.rules__heading {
+  margin: 0 0 8px;
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.rules__section p {
+  margin: 0 0 10px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rules__section p:last-child {
+  margin-bottom: 0;
+}
+
+.rules__list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rules__list--ordered {
+  margin-bottom: 12px;
+}
+
+.rules__section .rules__list {
+  margin-top: 12px;
+}
+
+.rules__list li + li {
+  margin-top: 6px;
+}
+
+.rules__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.rules__table th,
+.rules__table td {
+  padding: 8px 10px;
+  border: 1px solid rgba(46, 46, 46, 0.2);
+  text-align: left;
+  vertical-align: top;
+}
+
+.rules__table th {
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-weight: 700;
+  font-synthesis: none;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.rules__table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.25);
+}

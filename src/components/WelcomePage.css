@@ -63,6 +63,16 @@
   align-items: stretch;
   gap: 0;
   width: 100%;
+  padding: 0 31px;
+}
+
+.welcome__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  animation: welcome-word-appear 0s linear forwards;
+  animation-delay: 1000ms;
 }
 
 @keyframes welcome-word-appear {
