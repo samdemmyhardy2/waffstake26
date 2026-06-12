@@ -7,8 +7,8 @@ interface PlayerBannerProps {
   onSwitchPlayer: () => void
   onResetPlayer?: () => void
   cardBank?: {
-    lockedInTeams: number
-    matchYellows: number
+    remainingStarting: number
+    yellowCards: number
     redCards: number
     availableCards: number
   } | null
@@ -25,21 +25,22 @@ export function PlayerBanner({
     <div className="player-banner">
       {cardBank && (
         <p className="player-banner__balance" aria-live="polite">
-          <span className="player-banner__balance-part player-banner__balance-part--primary">
+          <span>Card bank:</span>
+          <span className="player-banner__balance-part">
             <CardChip />
-            <strong>{cardBank.availableCards}</strong> to spend
+            {cardBank.remainingStarting} starting
           </span>
           <span className="player-banner__balance-part">
-            · <CardChip />
-            {cardBank.lockedInTeams} on teams
-          </span>
-          <span className="player-banner__balance-part">
-            · <CardChip />
-            {cardBank.matchYellows} from matches
+            + <CardChip />
+            {cardBank.yellowCards} yellow
           </span>
           <span className="player-banner__balance-part">
             · <CardChip variant="red" />
             {cardBank.redCards} red
+          </span>
+          <span className="player-banner__balance-part">
+            (<CardChip />
+            {cardBank.availableCards} left to spend)
           </span>
         </p>
       )}

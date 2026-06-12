@@ -30,12 +30,6 @@
   gap: 4px;
 }
 
-.player-banner__balance-part--primary {
-  font-family: var(--eurostile);
-  font-weight: 700;
-  font-synthesis: none;
-}
-
 .player-banner__row {
   display: flex;
   align-items: center;

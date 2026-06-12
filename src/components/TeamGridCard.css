@@ -127,7 +127,7 @@ button.team-grid-card {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-family: var(--eurostile);
   font-size: 1rem;
   font-weight: 700;
   font-synthesis: none;

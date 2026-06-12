@@ -3,10 +3,10 @@ import { getGamePlayer } from '../data/gamePlayers'
 import { useGameState } from '../hooks/useGameState'
 import {
   getAvailableCardsForPlayer,
-  getLockedTeamCardsCost,
-  getSquadRedCards,
+  getRemainingStartingPoints,
   getSquadYellowCards,
 } from '../utils/gameState'
+import { buildLeaderboardRows } from '../utils/leaderboard'
 import { FloatingCards } from './FloatingCards'
 import { LeaderboardPage } from './LeaderboardPage'
 import { PlayerBanner } from './PlayerBanner'
@@ -34,12 +34,17 @@ export function MainApp() {
   const cardBank = useMemo(() => {
     if (!playerState?.selectedTeamSlug || !playerId) return null
 
+    const selectedTeam = buildLeaderboardRows().find(
+      (team) => team.slug === playerState.selectedTeamSlug,
+    )
+    if (!selectedTeam) return null
+
     const availableCards = getAvailableCardsForPlayer(playerState)
 
     return {
-      lockedInTeams: getLockedTeamCardsCost(playerState),
-      matchYellows: getSquadYellowCards(playerState),
-      redCards: getSquadRedCards(playerState),
+      remainingStarting: getRemainingStartingPoints(playerState),
+      yellowCards: getSquadYellowCards(playerState),
+      redCards: selectedTeam.redCards,
       availableCards,
     }
   }, [playerState, playerId])

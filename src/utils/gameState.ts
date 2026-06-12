@@ -24,7 +24,7 @@ interface GameState {
 const STATE_KEY = 'waffstake-game-state'
 const ACTIVE_PLAYER_KEY = 'waffstake-active-player'
 const GAME_DATA_VERSION_KEY = 'waffstake-data-version'
-const GAME_DATA_VERSION = 3
+const GAME_DATA_VERSION = 4
 
 const LEGACY_KEYS = {
   selectedTeam: 'waffstake-selected-team',

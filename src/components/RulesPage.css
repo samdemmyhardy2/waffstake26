@@ -58,7 +58,7 @@
 
 .rules__heading {
   margin: 0 0 8px;
-  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-family: var(--eurostile);
   font-size: 0.9375rem;
   font-weight: 700;
   font-synthesis: none;
@@ -117,7 +117,7 @@
 }
 
 .rules__table th {
-  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-family: var(--eurostile);
   font-weight: 700;
   font-synthesis: none;
   background: rgba(255, 255, 255, 0.45);

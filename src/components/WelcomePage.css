@@ -121,7 +121,7 @@
   padding: 0 24px;
   width: 100%;
   max-width: 28ch;
-  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-family: var(--eurostile);
   font-size: 1.25rem;
   font-weight: 700;
   font-synthesis: none;

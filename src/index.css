@@ -1,3 +1,12 @@
+/* CDN sheet lists local() first, so macOS can match regular Eurostile for weight 700. */
+@font-face {
+  font-family: 'Eurostile LT Pro Unicode';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://fonts.cdnfonts.com/s/58197/EurostileLTProUnicode-Bold.woff') format('woff');
+}
+
 :root {
   --navy: #052962;
   --navy-dark: #041f4a;
@@ -13,7 +22,7 @@
   --border: #dcdcdc;
   --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   --sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --eurostile: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  --eurostile: 'Eurostile LT Pro Unicode', sans-serif;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
