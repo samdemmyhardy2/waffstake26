@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { WelcomePage } from './components/WelcomePage'
 import { MainApp } from './components/MainApp'
+import { appPath, isAppPath } from './utils/baseUrl'
 
 type View = 'welcome' | 'app'
 
 function getViewFromPath(): View {
-  return window.location.pathname === '/app' ? 'app' : 'welcome'
+  return isAppPath(window.location.pathname) ? 'app' : 'welcome'
 }
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
   }, [])
 
   const goToApp = () => {
-    window.history.pushState(null, '', '/app')
+    window.history.pushState(null, '', appPath())
     setView('app')
   }
 
