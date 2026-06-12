@@ -2,30 +2,34 @@ import { useEffect, useState } from 'react'
 import { WelcomePage } from './components/WelcomePage'
 import { MainApp } from './components/MainApp'
 import { appPath, isAppPath } from './utils/baseUrl'
+import { clearActivePlayerId } from './utils/gameState'
 import { initGameSync } from './utils/gameSync'
 
 const ENTRY_ENABLED = true
 
 type View = 'welcome' | 'app'
 
-function getViewFromPath(): View {
-  if (!ENTRY_ENABLED) return 'welcome'
-  return 'app'
-}
-
 function App() {
-  const [view, setView] = useState<View>(getViewFromPath)
+  const [view, setView] = useState<View>('welcome')
 
   useEffect(() => {
-    if (ENTRY_ENABLED) {
-      if (!isAppPath(window.location.pathname)) {
-        window.history.replaceState(null, '', appPath())
-      }
-    } else if (isAppPath(window.location.pathname)) {
+    clearActivePlayerId()
+
+    if (isAppPath(window.location.pathname)) {
       window.history.replaceState(null, '', import.meta.env.BASE_URL)
     }
 
-    const onPopState = () => setView(getViewFromPath())
+    const onPopState = () => {
+      if (!ENTRY_ENABLED) return
+
+      if (isAppPath(window.location.pathname)) {
+        setView('app')
+      } else {
+        clearActivePlayerId()
+        setView('welcome')
+      }
+    }
+
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
@@ -33,6 +37,7 @@ function App() {
   useEffect(() => initGameSync(), [])
 
   const goToApp = () => {
+    clearActivePlayerId()
     window.history.pushState(null, '', appPath())
     setView('app')
   }
