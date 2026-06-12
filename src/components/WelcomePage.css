@@ -51,6 +51,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 24px 0 48px;
+  pointer-events: none;
 }
 
 .welcome__title {
@@ -101,7 +102,7 @@
 .welcome__card-rain {
   position: fixed;
   inset: 0;
-  pointer-events: none;
+  pointer-events: auto;
   overflow: hidden;
   z-index: 10;
 }
@@ -123,9 +124,15 @@
   opacity: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   animation: card-fall linear forwards;
-  pointer-events: auto;
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome__falling-card:not(.welcome__falling-card--football)::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
 }
 
 .welcome__falling-card--flutter {

@@ -61,6 +61,7 @@ interface WelcomePageProps {
 
 export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageProps) {
   const driftIdRef = useRef(0)
+  const footballTapRef = useRef(new Set<string>())
   const [landedCards, setLandedCards] = useState<Set<string>>(new Set())
   const [footballCards, setFootballCards] = useState<Set<string>>(new Set())
   const [footballDrops, setFootballDrops] = useState<
@@ -92,8 +93,9 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
   }, [introComplete])
 
   const turnToFootball = useCallback(
-    (e: React.MouseEvent<HTMLSpanElement>, cardId: string, landed: boolean) => {
-      if (footballCards.has(cardId)) return
+    (e: React.PointerEvent<HTMLSpanElement>, cardId: string, landed: boolean) => {
+      if (footballTapRef.current.has(cardId)) return
+      footballTapRef.current.add(cardId)
 
       setFootballCards((prev) => new Set(prev).add(cardId))
 
@@ -112,7 +114,7 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
         }))
       }
     },
-    [footballCards],
+    [],
   )
 
   const bounceCta = useCallback(() => {
@@ -169,7 +171,10 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
                     }
                   : {}),
               }}
-              onClick={(e) => turnToFootball(e, card.id, landed)}
+              onPointerDown={(e) => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return
+                turnToFootball(e, card.id, landed)
+              }}
               onAnimationEnd={(e) => {
                 if (e.animationName === 'card-fall' || e.animationName === 'card-flutter') {
                   setLandedCards((prev) => new Set(prev).add(card.id))
