@@ -95,8 +95,24 @@ function totalYellowCardsForPlayer(state: PlayerState): number {
   }, 0)
 }
 
+function totalRedCardsForPlayer(state: PlayerState): number {
+  const rows = buildLeaderboardRows()
+  return getPlayerTeamSlugs(state).reduce((total, slug) => {
+    const team = rows.find((entry) => entry.slug === slug)
+    return total + (team?.redCards ?? 0)
+  }, 0)
+}
+
 export function getSquadYellowCards(state: PlayerState): number {
   return totalYellowCardsForPlayer(state)
+}
+
+export function getSquadRedCards(state: PlayerState): number {
+  return totalRedCardsForPlayer(state)
+}
+
+export function canStealFromPlayer(attacker: PlayerState, defender: PlayerState): boolean {
+  return getSquadRedCards(attacker) > getSquadRedCards(defender)
 }
 
 export function getRemainingStartingPoints(state: PlayerState): number {

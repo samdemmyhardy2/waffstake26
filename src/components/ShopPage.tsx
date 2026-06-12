@@ -4,9 +4,12 @@ import { useGameState } from '../hooks/useGameState'
 import { useGameTime } from '../hooks/useGameTime'
 import { assetUrl, type AppTab } from '../utils/baseUrl'
 import {
+  canStealFromPlayer,
   findTeamOwner,
   formatPurchaseMessage,
   getAvailableCardsForPlayer,
+  getPlayerState,
+  getSquadRedCards,
   MAX_ADDITIONAL_TEAMS,
   playerOwnsTeam,
   previewPurchase,
@@ -98,8 +101,6 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
     return getAvailableCardsForPlayer(playerState)
   }, [playerState])
 
-  const myRedCards = selectedTeam?.redCards ?? 0
-
   const handleAcquire = (team: (typeof teams)[number]) => {
     if (gameTimeLocked) {
       setMessage(gameTimeMessage())
@@ -123,11 +124,12 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
 
     const ownerId = findTeamOwner(team.slug, playerId)
     const owner = ownerId ? getGamePlayer(ownerId) : null
-    const targetRedCards = redBySlug.get(team.slug) ?? 0
+    const defenderState = ownerId ? getPlayerState(ownerId) : null
 
-    if (ownerId && myRedCards <= targetRedCards) {
+    if (ownerId && defenderState && !canStealFromPlayer(playerState, defenderState)) {
+      const theirReds = getSquadRedCards(defenderState)
       setMessage(
-        `You need more red cards on your top team than ${team.name} has (${targetRedCards}) to steal it.`,
+        `You need more total red cards than ${owner?.name ?? 'them'} (${theirReds}) to steal any of their teams.`,
       )
       return
     }
@@ -226,8 +228,10 @@ export function ShopPage({ onNavigate, playerId }: ShopPageProps) {
           const ownerId = findTeamOwner(team.slug, playerId)
           const owner = ownerId ? getGamePlayer(ownerId) : null
           const teamRedCards = redBySlug.get(team.slug) ?? 0
+          const defenderState = ownerId ? getPlayerState(ownerId) : null
           const canAfford = availableCards >= team.cardsRequired
-          const canSteal = !ownerId || myRedCards > teamRedCards
+          const canSteal =
+            !ownerId || (defenderState ? canStealFromPlayer(playerState!, defenderState) : false)
           const canAcquire =
             !gameTimeLocked && Boolean(selectedTeam) && canAfford && canSteal && !isCurrentTeam
           const actionLabel = isCurrentTeam ? 'Owned' : ownerId ? 'Steal' : 'Buy'
