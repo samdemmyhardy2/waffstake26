@@ -1,0 +1,59 @@
+:root {
+  --navy: #052962;
+  --navy-dark: #041f4a;
+  --yellow: #ffe500;
+  --red: #c70000;
+  --yellow-card: #f5c518;
+  --title-yellow: #f5ff00;
+  --red-card: #d0021b;
+  --paper: #f6f6f6;
+  --white: #ffffff;
+  --ink: #121212;
+  --ink-muted: #5c5c5c;
+  --border: #dcdcdc;
+  --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
