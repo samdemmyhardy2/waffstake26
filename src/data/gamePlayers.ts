@@ -20,6 +20,7 @@ export const GAME_PLAYERS: GamePlayer[] = [
   { id: 'dmoz', name: 'Dmoz', defaultTeamSlug: 'mexico' },
   { id: 'felix', name: 'Felix', defaultTeamSlug: 'france' },
   { id: 'jp', name: 'JP', defaultTeamSlug: 'spain' },
+  { id: 'matt', name: 'Matt', defaultTeamSlug: 'england' },
 ]
 
 export function getGamePlayer(playerId: string): GamePlayer | undefined {
