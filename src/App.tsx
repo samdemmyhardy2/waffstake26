@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { WelcomePage } from './components/WelcomePage'
 import { MainApp } from './components/MainApp'
-import { appPath, isAppPath } from './utils/baseUrl'
 import { clearActivePlayerId } from './utils/gameState'
 import { initGameSync } from './utils/gameSync'
 
@@ -13,32 +12,25 @@ function App() {
   const [view, setView] = useState<View>('welcome')
 
   useEffect(() => {
-    clearActivePlayerId()
-
-    if (isAppPath(window.location.pathname)) {
-      window.history.replaceState(null, '', import.meta.env.BASE_URL)
+    const resetToIntro = () => {
+      clearActivePlayerId()
+      setView('welcome')
     }
 
-    const onPopState = () => {
-      if (!ENTRY_ENABLED) return
+    resetToIntro()
 
-      if (isAppPath(window.location.pathname)) {
-        setView('app')
-      } else {
-        clearActivePlayerId()
-        setView('welcome')
-      }
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) resetToIntro()
     }
 
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
+    window.addEventListener('pageshow', onPageShow)
+    return () => window.removeEventListener('pageshow', onPageShow)
   }, [])
 
   useEffect(() => initGameSync(), [])
 
   const goToApp = () => {
     clearActivePlayerId()
-    window.history.pushState(null, '', appPath())
     setView('app')
   }
 
