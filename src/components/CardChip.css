@@ -1,0 +1,18 @@
+.card-chip {
+  display: inline-block;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.card-chip--yellow {
+  background: linear-gradient(160deg, #ffe566 0%, var(--yellow-card) 45%, #e6b800 100%);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.card-chip--red {
+  background: linear-gradient(160deg, #ff3344 0%, var(--red-card) 50%, #a8000f 100%);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}

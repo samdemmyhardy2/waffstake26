@@ -1,0 +1,89 @@
+.player-select {
+  min-height: 100dvh;
+  background: var(--title-yellow);
+  color: var(--ink);
+  padding: 28px 31px calc(24px + var(--safe-bottom));
+}
+
+.player-select__header {
+  padding: 0 10px;
+  margin-bottom: 28px;
+}
+
+.player-select__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 40px;
+}
+
+.player-select__title {
+  margin: 0;
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: calc(1.25rem * clamp(1, 100vw / 375, 1.4) + 5pt);
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: 1;
+  text-align: center;
+}
+
+.player-select__hint {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #1d1f22;
+}
+
+.player-select__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.player-select__card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 15px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.player-select__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  font-synthesis: none;
+}
+
+.player-select__badge {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.player-select__team {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5c5c5c;
+  text-align: right;
+}

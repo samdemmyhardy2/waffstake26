@@ -1,0 +1,28 @@
+.app-shell {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--title-yellow);
+}
+
+.app-frame {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: transparent;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 calc(96px + var(--safe-bottom));
+}
+
+.app-frame__content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}

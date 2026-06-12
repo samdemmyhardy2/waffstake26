@@ -1,5 +1,85 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { getGamePlayer } from '../data/gamePlayers'
+import { useGameState } from '../hooks/useGameState'
+import { getAvailableCardsForPlayer, STARTING_POINTS } from '../utils/gameState'
+import { buildLeaderboardRows } from '../utils/leaderboard'
+import { FloatingCards } from './FloatingCards'
 import { LeaderboardPage } from './LeaderboardPage'
+import { PlayerBanner } from './PlayerBanner'
+import { PlayerSelectPage } from './PlayerSelectPage'
+import { ShopPage } from './ShopPage'
+import { TabBar } from './TabBar'
+import { appTabFromPath, type AppTab } from '../utils/baseUrl'
+import './MainApp.css'
 
 export function MainApp() {
-  return <LeaderboardPage />
+  const { playerId, playerState, allStates, selectPlayer, switchPlayer, resetPlayer } = useGameState()
+  const [activeTab, setActiveTab] = useState<AppTab>(() => appTabFromPath(window.location.pathname))
+
+  useEffect(() => {
+    const onPopState = () => setActiveTab(appTabFromPath(window.location.pathname))
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  const navigate = useCallback((tab: AppTab) => {
+    setActiveTab(tab)
+  }, [])
+
+  const cardBank = useMemo(() => {
+    if (!playerState?.selectedTeamSlug || !playerId) return null
+
+    const selectedTeam = buildLeaderboardRows().find(
+      (team) => team.slug === playerState.selectedTeamSlug,
+    )
+    if (!selectedTeam) return null
+
+    const availableCards = getAvailableCardsForPlayer(playerState)
+
+    return {
+      remainingStarting: Math.max(0, STARTING_POINTS - playerState.primaryTeamCost),
+      yellowCards: selectedTeam.yellowCards,
+      redCards: selectedTeam.redCards,
+      availableCards,
+    }
+  }, [playerState, playerId])
+
+  const player = playerId ? getGamePlayer(playerId) : null
+  const playerName = player?.name ?? 'Player'
+
+  if (!playerId) {
+    return (
+      <div className="app-shell">
+        <FloatingCards />
+        <div className="app-frame">
+          <PlayerSelectPage allStates={allStates} onSelect={selectPlayer} />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="app-shell">
+      <FloatingCards />
+      <div className="app-frame">
+      <PlayerBanner
+        playerName={playerName}
+        isTestPlayer={player?.isTestPlayer}
+        onSwitchPlayer={switchPlayer}
+        onResetPlayer={resetPlayer}
+        cardBank={cardBank}
+      />
+
+      <div className="app-frame__content">
+        {activeTab === 'shop' ? (
+          <ShopPage onNavigate={navigate} playerId={playerId} />
+        ) : (
+          <LeaderboardPage playerId={playerId} />
+        )}
+      </div>
+
+      <TabBar activeTab={activeTab} onNavigate={navigate} />
+      </div>
+    </div>
+  )
 }

@@ -1,41 +1,88 @@
 .leaderboard {
   --leaderboard-pad: 31px;
-  min-height: 100dvh;
-  background: var(--title-yellow);
-  color: var(--ink);
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 28px 0 calc(96px + var(--safe-bottom));
+}
+
+.leaderboard--embedded {
+  background: transparent;
 }
 
 .leaderboard__header {
-  padding: 0 var(--leaderboard-pad) 18px;
+  --lb-header-scale: clamp(1, 100vw / 375, 1.4);
+  padding: 0 10px;
 }
 
 .leaderboard__logo {
   display: block;
-  width: min(100%, 317px);
+  width: 100%;
   height: auto;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
 }
 
 .leaderboard__title {
   margin: 0;
+  padding: 0;
   font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
-  font-size: 1.25rem;
+  font-size: calc(1.25rem * var(--lb-header-scale) + 5pt);
   font-weight: 700;
   font-synthesis: none;
   line-height: 1;
+  text-align: center;
+}
+
+.leaderboard__game-time {
+  margin: 0 var(--leaderboard-pad) 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(208, 2, 27, 0.12);
+  border: 1px solid rgba(208, 2, 27, 0.35);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.leaderboard__message {
+  margin: 0 var(--leaderboard-pad) 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.leaderboard__pick {
+  padding: 0 var(--leaderboard-pad) 20px;
+}
+
+.leaderboard__pick-title {
+  margin: 0 0 12px;
+  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+  font-synthesis: none;
+  font-size: 1.125rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.leaderboard__pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .leaderboard__list {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 19px;
-  padding: 0 var(--leaderboard-pad);
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
 }
 
 .leaderboard-card {
@@ -43,18 +90,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 125px;
-  padding: 0 28px;
+  padding: 0 20px;
+  border: 0;
   border-radius: 15px;
   background: var(--team-home);
-  color: var(--team-away);
+  color: #fff;
   overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.leaderboard-card--selected {
+  box-shadow: 0 0 0 3px var(--ink);
+}
+
+.leaderboard-card--static {
+  cursor: default;
 }
 
 .leaderboard-card__content {
   position: relative;
   z-index: 2;
-  max-width: 58%;
+  flex: 1;
+  min-width: 0;
 }
 
 .leaderboard-card__name {
@@ -66,79 +130,76 @@
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .leaderboard-card__tally {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
-  opacity: 0.92;
 }
 
-.leaderboard-card__sep {
-  opacity: 0.65;
+.leaderboard-card__tally-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.leaderboard-card__card-chip {
+  width: 11px;
+  height: 15px;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  flex-shrink: 0;
+}
+
+.leaderboard-card__card-chip--yellow {
+  background: linear-gradient(160deg, #ffe566 0%, var(--yellow-card) 45%, #e6b800 100%);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.leaderboard-card__card-chip--red {
+  background: linear-gradient(160deg, #ff3344 0%, var(--red-card) 50%, #a8000f 100%);
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .leaderboard-card__crest-wrap {
   position: relative;
-  width: 105px;
-  height: 105px;
+  width: 88px;
+  height: 88px;
   flex-shrink: 0;
 }
 
 .leaderboard-card__ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--team-away) 22%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .leaderboard-card__ring--outer {
   inset: 0;
-  background: color-mix(in srgb, var(--team-away) 8%, transparent);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .leaderboard-card__ring--inner {
   inset: 10px;
-  background: color-mix(in srgb, var(--team-away) 12%, transparent);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .leaderboard-card__crest {
   position: absolute;
-  inset: 22px;
-  width: calc(100% - 44px);
-  height: calc(100% - 44px);
+  inset: 18px;
+  width: calc(100% - 36px);
+  height: calc(100% - 36px);
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-}
-
-.leaderboard__tabbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 80px;
-  padding-bottom: var(--safe-bottom);
-  background: #fff;
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 62px;
-}
-
-.leaderboard__tab {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: #e6e8ec;
-}
-
-.leaderboard__tab--active {
-  background: #121212;
 }
 
 .leaderboard__meta {

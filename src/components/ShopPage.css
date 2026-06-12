@@ -1,0 +1,118 @@
+.shop {
+  --page-pad: 31px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop--embedded {
+  background: transparent;
+}
+
+.shop__header {
+  padding: 0 10px;
+}
+
+.shop__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.shop__roster {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto 28px;
+  padding: 0 var(--page-pad);
+  box-sizing: border-box;
+}
+
+.shop__my-team {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.shop__add-team {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 125px;
+  margin: 0;
+  padding: 0 20px;
+  border: 2px dashed var(--ink);
+  border-radius: 15px;
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.shop__prompt {
+  margin: 0 var(--page-pad) 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.shop__prompt-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.shop__title {
+  margin: 0;
+  padding: 0 var(--page-pad);
+  font-family: 'Eurostile LT Pro Unicode', 'EuroStyle', sans-serif;
+  font-size: calc(1.25rem * clamp(1, 100vw / 375, 1.4) + 5pt);
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: 1;
+  text-align: center;
+}
+
+.shop__game-time {
+  margin: 12px var(--page-pad) 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(208, 2, 27, 0.12);
+  border: 1px solid rgba(208, 2, 27, 0.35);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.shop__message {
+  margin: 12px var(--page-pad) 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.shop__grid {
+  margin-top: 20px;
+}

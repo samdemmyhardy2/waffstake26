@@ -1,0 +1,33 @@
+export interface GamePlayer {
+  id: string
+  name: string
+  defaultTeamSlug?: string
+  isTestPlayer?: boolean
+  excludedTeamSlugs?: string[]
+}
+
+export const TEST_PLAYER_ID = 'player-test'
+
+export const GAME_PLAYERS: GamePlayer[] = [
+  {
+    id: TEST_PLAYER_ID,
+    name: 'Player 1',
+    isTestPlayer: true,
+    excludedTeamSlugs: ['mexico'],
+  },
+  { id: 'tommy', name: 'Tommy', defaultTeamSlug: 'new-zealand' },
+  { id: 'picot', name: 'Picot', defaultTeamSlug: 'uzbekistan' },
+  { id: 'robs', name: 'Robs', defaultTeamSlug: 'uruguay' },
+  { id: 'dmoz', name: 'Dmoz', defaultTeamSlug: 'mexico' },
+  { id: 'felix', name: 'Felix', defaultTeamSlug: 'france' },
+  { id: 'jp', name: 'JP', defaultTeamSlug: 'spain' },
+]
+
+export function getGamePlayer(playerId: string): GamePlayer | undefined {
+  return GAME_PLAYERS.find((player) => player.id === playerId)
+}
+
+export function isTeamExcludedForPlayer(playerId: string, teamSlug: string): boolean {
+  const player = getGamePlayer(playerId)
+  return player?.excludedTeamSlugs?.includes(teamSlug) ?? false
+}

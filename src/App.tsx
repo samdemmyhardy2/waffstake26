@@ -3,7 +3,7 @@ import { WelcomePage } from './components/WelcomePage'
 import { MainApp } from './components/MainApp'
 import { appPath, isAppPath } from './utils/baseUrl'
 
-const ENTRY_ENABLED = false
+const ENTRY_ENABLED = true
 
 type View = 'welcome' | 'app'
 

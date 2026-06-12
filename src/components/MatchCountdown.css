@@ -1,0 +1,65 @@
+.match-countdown {
+  padding: 0 var(--leaderboard-pad, 31px) 28px;
+}
+
+.match-countdown__time {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+  font-synthesis: none;
+  font-size: clamp(2.75rem, 14vw, 4.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.match-countdown__line {
+  display: block;
+}
+
+.match-countdown__teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+.match-countdown__crest-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(72px, 22vw, 96px);
+  height: clamp(72px, 22vw, 96px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.match-countdown__crest {
+  width: 68%;
+  height: 68%;
+  object-fit: contain;
+}
+
+.match-countdown__crest-fallback {
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.match-countdown__versus {
+  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+  font-synthesis: none;
+  font-size: clamp(2rem, 10vw, 3.25rem);
+  line-height: 1;
+  color: var(--ink);
+}
