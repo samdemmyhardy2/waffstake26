@@ -44,6 +44,14 @@ function readSyncCursor(): string | null {
   }
 }
 
+export function clearSyncCursor(): void {
+  try {
+    localStorage.removeItem(SYNC_CURSOR_KEY)
+  } catch {
+    // ignore storage errors
+  }
+}
+
 function writeSyncCursor(updatedAt: string): void {
   try {
     localStorage.setItem(SYNC_CURSOR_KEY, updatedAt)

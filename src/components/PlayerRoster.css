@@ -5,9 +5,8 @@
 
 .player-roster__title {
   margin: 20px 0 16px;
-  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-stretch: condensed;
-  font-weight: 900;
+  font-family: var(--eurostile);
+  font-weight: 700;
   font-synthesis: none;
   font-size: 1.125rem;
   line-height: 1;

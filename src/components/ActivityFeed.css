@@ -5,9 +5,8 @@
 
 .activity-feed__title {
   margin: 20px 0 12px;
-  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-stretch: condensed;
-  font-weight: 900;
+  font-family: var(--eurostile);
+  font-weight: 700;
   font-synthesis: none;
   font-size: 1.125rem;
   line-height: 1;
@@ -34,8 +33,10 @@
 
 .activity-feed__item {
   margin: 0;
+  font-family: var(--eurostile);
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-synthesis: none;
   line-height: 1.35;
   color: var(--ink);
 }

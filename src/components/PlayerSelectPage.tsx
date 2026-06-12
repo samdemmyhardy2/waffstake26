@@ -1,4 +1,4 @@
-import { GAME_PLAYERS } from '../data/gamePlayers'
+import { getVisibleGamePlayers } from '../data/gamePlayers'
 import { assetUrl } from '../utils/baseUrl'
 import type { PlayerState } from '../utils/gameState'
 import { teamNameFromSlug } from '../utils/teamName'
@@ -25,7 +25,7 @@ export function PlayerSelectPage({ allStates, onSelect }: PlayerSelectPageProps)
       </header>
 
       <ul className="player-select__list">
-        {GAME_PLAYERS.map((player) => {
+        {getVisibleGamePlayers().map((player) => {
           const state = allStates[player.id]
           const teamName = teamNameFromSlug(state?.selectedTeamSlug ?? null)
 
@@ -39,7 +39,6 @@ export function PlayerSelectPage({ allStates, onSelect }: PlayerSelectPageProps)
               <button type="button" className="player-select__card" onClick={() => onSelect(player.id)}>
                 <span className="player-select__name">
                   {player.name}
-                  {player.isTestPlayer && <span className="player-select__badge">testing</span>}
                 </span>
                 <span className="player-select__team">{displayTeam}</span>
               </button>

@@ -41,8 +41,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--eurostile);
   font-size: 0.875rem;
   font-weight: 700;
+  font-synthesis: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .player-banner__badge {

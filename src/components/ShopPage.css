@@ -58,9 +58,10 @@
   border: 2px dashed var(--ink);
   border-radius: 15px;
   background: transparent;
-  font: inherit;
+  font-family: var(--eurostile);
   font-size: 1rem;
   font-weight: 700;
+  font-synthesis: none;
   color: var(--ink);
   cursor: pointer;
 }
@@ -99,8 +100,10 @@
   border-radius: 10px;
   background: rgba(208, 2, 27, 0.12);
   border: 1px solid rgba(208, 2, 27, 0.35);
+  font-family: var(--eurostile);
   font-size: 0.875rem;
   font-weight: 700;
+  font-synthesis: none;
   text-align: center;
 }
 

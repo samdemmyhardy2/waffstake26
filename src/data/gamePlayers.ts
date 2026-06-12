@@ -26,6 +26,10 @@ export function getGamePlayer(playerId: string): GamePlayer | undefined {
   return GAME_PLAYERS.find((player) => player.id === playerId)
 }
 
+export function getVisibleGamePlayers(): GamePlayer[] {
+  return GAME_PLAYERS.filter((player) => !player.isTestPlayer)
+}
+
 export function isTeamExcludedForPlayer(playerId: string, teamSlug: string): boolean {
   const player = getGamePlayer(playerId)
   return player?.excludedTeamSlugs?.includes(teamSlug) ?? false

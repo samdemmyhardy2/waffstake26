@@ -28,9 +28,8 @@
 .rules__title {
   margin: 0 0 16px;
   padding: 0 var(--rules-pad);
-  font-family: 'Helvetica Neue Condensed Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-stretch: condensed;
-  font-weight: 900;
+  font-family: var(--eurostile);
+  font-weight: 700;
   font-synthesis: none;
   font-size: 1.125rem;
   line-height: 1;
@@ -71,6 +70,12 @@
   margin: 0 0 10px;
   font-size: 0.875rem;
   line-height: 1.45;
+}
+
+.rules__section strong {
+  font-family: var(--eurostile);
+  font-weight: 700;
+  font-synthesis: none;
 }
 
 .rules__section p:last-child {

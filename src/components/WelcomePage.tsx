@@ -35,7 +35,7 @@ export function WelcomePage({ onGetStarted, entryEnabled = false }: WelcomePageP
           className="welcome__message"
           style={{ ['--message-delay' as string]: `${WELCOME_MESSAGE_DELAY_MS}ms` }}
         >
-          Enter at your own risk!
+          Pick your player. Let the waff begin.
         </p>
       </div>
 

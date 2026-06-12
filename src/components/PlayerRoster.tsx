@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { CardChip } from './CardChip'
-import { GAME_PLAYERS, getGamePlayer } from '../data/gamePlayers'
+import { getVisibleGamePlayers } from '../data/gamePlayers'
 import { getAvailableCardsForPlayer, getPlayerTeamSlugs, type PlayerState } from '../utils/gameState'
 import { buildLeaderboardRows, type LeaderboardRow } from '../utils/leaderboard'
 import './PlayerRoster.css'
@@ -51,7 +51,7 @@ export function PlayerRoster({ allStates, activePlayerId }: PlayerRosterProps) {
   }, [])
 
   const roster = useMemo(() => {
-    return GAME_PLAYERS.map((player) => {
+    return getVisibleGamePlayers().map((player) => {
       const state = allStates[player.id]
       const teams = (state ? getPlayerTeamSlugs(state) : [])
         .map((slug) => rowsBySlug.get(slug) ?? null)
@@ -69,7 +69,6 @@ export function PlayerRoster({ allStates, activePlayerId }: PlayerRosterProps) {
       <ul className="player-roster__list">
         {roster.map(({ player, teams, bank }) => {
           const isActive = player.id === activePlayerId
-          const meta = getGamePlayer(player.id)
 
           return (
             <li
@@ -81,9 +80,6 @@ export function PlayerRoster({ allStates, activePlayerId }: PlayerRosterProps) {
                   className={`player-roster__name${isActive ? ' player-roster__name--active' : ''}`}
                 >
                   {player.name}
-                  {meta?.isTestPlayer && (
-                    <span className="player-roster__badge">testing</span>
-                  )}
                 </p>
                 {teams.length > 0 && (
                   <span className="player-roster__bank">

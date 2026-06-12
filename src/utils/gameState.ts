@@ -3,7 +3,7 @@ import { TEAM_SEED_BY_SLUG, cardsRequiredForSeed } from '../data/teamSeeds'
 import { appendActivity, clearActivityFeed } from './activityFeed'
 import { buildLeaderboardRows } from './leaderboard'
 import { isGameTime } from './gameTime'
-import { isGameSyncEnabled, scheduleSyncPush } from './gameSync'
+import { clearSyncCursor, isGameSyncEnabled, scheduleSyncPush } from './gameSync'
 import { buildShopTeams } from './shopTeams'
 
 export const MAX_ADDITIONAL_TEAMS = 2
@@ -24,7 +24,7 @@ interface GameState {
 const STATE_KEY = 'waffstake-game-state'
 const ACTIVE_PLAYER_KEY = 'waffstake-active-player'
 const GAME_DATA_VERSION_KEY = 'waffstake-data-version'
-const GAME_DATA_VERSION = 2
+const GAME_DATA_VERSION = 3
 
 const LEGACY_KEYS = {
   selectedTeam: 'waffstake-selected-team',
@@ -572,5 +572,10 @@ export function resetPlayerState(playerId: string): void {
 export function resetAllGameState(): void {
   writeState(emptyState())
   clearActivityFeed()
+  clearSyncCursor()
   localStorage.setItem(GAME_DATA_VERSION_KEY, String(GAME_DATA_VERSION))
+}
+
+export function resetEntireGame(): void {
+  resetAllGameState()
 }
