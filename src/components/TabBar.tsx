@@ -35,7 +35,7 @@ export function TabBar({ activeTab, onNavigate }: TabBarProps) {
         aria-current={activeTab === 'profile' ? 'page' : undefined}
         onClick={() => onNavigate('profile')}
       >
-        <img src={assetUrl('/nav/profile.svg')} alt="" width={19} height={23} />
+        <img src={assetUrl('/nav/profile.svg')} alt="" width={22} height={23} />
       </button>
     </nav>
   )
