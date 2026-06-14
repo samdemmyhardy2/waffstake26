@@ -71,11 +71,27 @@ function applyRemoteRow(row: RemoteSyncRow): boolean {
   if (cursor && row.updated_at <= cursor) return false
 
   applyingRemote = true
+  let keptLocalActivity = false
   try {
+    let activityFeed = row.activity_feed
+
+    try {
+      const localRaw = localStorage.getItem(ACTIVITY_KEY)
+      const localActivity = localRaw ? JSON.parse(localRaw) : []
+      const remoteActivity = Array.isArray(row.activity_feed) ? row.activity_feed : []
+
+      if (Array.isArray(localActivity) && localActivity.length > remoteActivity.length) {
+        activityFeed = localActivity
+        keptLocalActivity = true
+      }
+    } catch {
+      // keep remote activity on parse errors
+    }
+
     localStorage.setItem(STATE_KEY, JSON.stringify(row.game_state))
-    localStorage.setItem(ACTIVITY_KEY, JSON.stringify(row.activity_feed))
+    localStorage.setItem(ACTIVITY_KEY, JSON.stringify(activityFeed))
     writeSyncCursor(row.updated_at)
-    localHasUnsyncedChanges = false
+    localHasUnsyncedChanges = keptLocalActivity
     dispatchLocalUpdates()
     return true
   } finally {
@@ -103,6 +119,9 @@ async function pullRemote(): Promise<void> {
     applyRemoteRow(data as RemoteSyncRow)
   } finally {
     initialPullDone = true
+    if (localHasUnsyncedChanges) {
+      void pushRemote()
+    }
   }
 }
 
@@ -147,9 +166,11 @@ async function pushRemote(): Promise<void> {
 }
 
 export function scheduleSyncPush(): void {
-  if (!getClient() || applyingRemote || !initialPullDone) return
+  if (!getClient() || applyingRemote) return
 
   localHasUnsyncedChanges = true
+
+  if (!initialPullDone) return
 
   if (pushTimer) clearTimeout(pushTimer)
   pushTimer = setTimeout(() => {
